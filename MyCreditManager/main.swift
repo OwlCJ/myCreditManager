@@ -4,7 +4,6 @@ import Foundation
 let functions: [String] = ["학생추가", "학생삭제", "성적추가(변경)", "성적삭제", "평점보기"]
 var students: [Student] = []
 
-
 while true {
     showFunctionsList(functions)
     let userFunction = readLine()
@@ -46,8 +45,27 @@ func scoreManaging(_ userFunction: String?) -> Bool {
             print("\(addStudent.name)은 이미 존재하는 학생입니다. 추가하지 않습니다.")
             break
         }
-        
         students.append(addStudent)
+        
+    case "2":
+        var hasStudent = false
+        print("삭제할 학생의 이름을 입력해주세요")
+        let removeStudent = Student(name: readLine()!)
+
+        guard removeStudent.name != "" else {
+            print("입력이 잘못되었습니다. 다시 확인해주세요.")
+            break
+        }
+
+        for (idx, student) in students.enumerated() {
+            if student.name == removeStudent.name {
+                students.remove(at: idx)
+                print("\(removeStudent.name)학생을 삭제 하였습니다.")
+                hasStudent = true
+            }
+        }
+        
+        if hasStudent == false { print("\(removeStudent.name)학생을 찾지 못했습니다.") }
         
         
         
@@ -59,6 +77,7 @@ func scoreManaging(_ userFunction: String?) -> Bool {
         print("뭔가 입력이 잘못되었습니다.  1~5 사이의 숫자 혹은 X를 입력해주세요.")
     }
     
+    //debug
     print(students)
     return loopCheck
 }
