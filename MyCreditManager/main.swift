@@ -14,19 +14,6 @@ while true {
     }
 }
 
-func showFunctionsList(_ functions: [String]) {
-    // 기능 리스트 나열
-    var functionsList: String = ""
-    for (index, function) in functions.enumerated() {
-        functionsList += "\(index + 1): \(function), "
-    }
-    functionsList += "X: 종료"
-    
-    
-    print("원하는 기능을 입력해주세요")
-    print(functionsList)
-}
-
 func scoreManaging(_ userFunction: String?) -> Bool {
     var loopCheck: Bool = true
     
@@ -79,10 +66,15 @@ func scoreManaging(_ userFunction: String?) -> Bool {
         let scoreAdding = userInput.components(separatedBy: " ")
 
         //무입력, 띄어쓰기로 구분된 이름, 과목, 성적 3칸이 모두 입력되었는지 확인
-        guard scoreAdding.count == 3, students.contains(where: { student in
+        guard scoreAdding.count == 3 else {
+            print("입력이 잘못되었습니다. 다시 확인해주세요.")
+            break
+        }
+        
+        guard students.contains(where: { student in
             student.name == scoreAdding[0]
         }) else {
-            print("입력이 잘못되었습니다. 다시 확인해주세요.")
+            print("\(scoreAdding[0]) 학생을 찾지 못했습니다.")
             break
         }
         
@@ -98,13 +90,45 @@ func scoreManaging(_ userFunction: String?) -> Bool {
                 print("\(scoreAdding[0])학생의 \(scoreAdding[1])과목이 \(scoreAdding[2])로 추가(변경)되었습니다.")
                 
                 //scoreAverage 재연산 후 저장
-                let allScores = students[idx].subjectScore.values
-                let stringToScore = allScores.map { scores[$0]! }
-                
-                students[idx].scoreAverage = stringToScore.reduce(0.0, +) / Double(stringToScore.count)
+                scoreToInt(idx)
             }
         }
         
+    case "4":
+        print("""
+            성적을 삭제할 학생의 이름, 과목 이름을 띄어쓰기로 구분하여 차례로 작성해주세요.
+        입력예) Mickey Swift
+        """)
+        let userInput = readLine()!
+        let scoreRemoving = userInput.components(separatedBy: " ")
+
+        //무입력, 띄어쓰기로 구분된 이름, 과목, 성적 3칸이 모두 입력되었는지 확인
+        guard scoreRemoving.count == 2 else {
+            print("입력이 잘못되었습니다. 다시 확인해주세요.")
+            break
+        }
+        
+        guard students.contains(where: { student in
+            student.name == scoreRemoving[0]
+        }) else {
+            print("\(scoreRemoving[0]) 학생을 찾지 못했습니다.")
+            break
+        }
+        
+        for (idx, student) in students.enumerated() {
+            if student.name == scoreRemoving[0] {
+                guard students[idx].subjectScore.keys.contains(scoreRemoving[1]) else {
+                    print("\(scoreRemoving[1]) 과목이 존재하지 않습니다. ")
+                    break
+                }
+                
+                students[idx].subjectScore.removeValue(forKey: scoreRemoving[1])
+                print("\(scoreRemoving[0]) 학생의 \(scoreRemoving[1]) 과목의 성적이 삭제되었습니다.")
+                
+                //scoreAverage 재연산 후 저장
+                scoreToInt(idx)
+            }
+        }
         
         
         
@@ -116,7 +140,27 @@ func scoreManaging(_ userFunction: String?) -> Bool {
         print("뭔가 입력이 잘못되었습니다.  1~5 사이의 숫자 혹은 X를 입력해주세요.")
     }
     
-    //debug
+    //DEBUG
     print(students)
     return loopCheck
+}
+
+func showFunctionsList(_ functions: [String]) {
+    // 기능 리스트 나열
+    var functionsList: String = ""
+    for (index, function) in functions.enumerated() {
+        functionsList += "\(index + 1): \(function), "
+    }
+    functionsList += "X: 종료"
+    
+    
+    print("원하는 기능을 입력해주세요")
+    print(functionsList)
+}
+
+func scoreToInt(_ idx: Int) {
+    let allScores = students[idx].subjectScore.values
+    let stringToScore = allScores.map { scores[$0]! }
+    
+    students[idx].scoreAverage = stringToScore.reduce(0.0, +) / Double(stringToScore.count)
 }
