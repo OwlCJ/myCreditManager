@@ -34,6 +34,7 @@ func scoreManaging(_ userFunction: String?) -> Bool {
             break
         }
         students.append(addStudent)
+        print("\(addStudent.name) 학생을 추가했습니다.")
         
     case "2":
         print("삭제할 학생의 이름을 입력해주세요")
@@ -132,6 +133,32 @@ func scoreManaging(_ userFunction: String?) -> Bool {
             }
         }
         
+    case "5":
+        print("평점을 알고싶은 학생의 이름을 입력해주세요")
+        let userInput = readLine()!
+        
+        guard userInput != "" else {
+            print("입력이 잘못 되었습니다. 다시 확인해주세요.")
+            break
+        }
+        
+        guard students.contains(where: { student in
+            student.name == userInput
+        }) else {
+            print("\(userInput) 학생을 찾지 못했습니다.")
+            break
+        }
+        
+        for student in students {
+            if student.name == userInput {
+                for (subject, score) in student.subjectScore{
+                    print("\(subject): \(score)")
+                }
+                let scoreAverage = String(format: "%.2f", student.scoreAverage)
+                print("평점 : \(scoreAverage)")
+                break
+            }
+        }
         
     case "X":
         print("프로그램을 종료합니다...")
@@ -141,27 +168,26 @@ func scoreManaging(_ userFunction: String?) -> Bool {
         print("뭔가 입력이 잘못되었습니다.  1~5 사이의 숫자 혹은 X를 입력해주세요.")
     }
     
-    //DEBUG
-    print(students)
     return loopCheck
 }
 
+//기능리스트 나열 함수
 func showFunctionsList(_ functions: [String]) {
-    // 기능 리스트 나열
     var functionsList: String = ""
     for (index, function) in functions.enumerated() {
         functionsList += "\(index + 1): \(function), "
     }
     functionsList += "X: 종료"
     
-    
     print("원하는 기능을 입력해주세요")
     print(functionsList)
 }
 
+//성적 영문점수를 평점 계산을 위한 숫자로 매핑
 func scoreToInt(_ idx: Int) {
     let allScores = students[idx].subjectScore.values
     let stringToScore = allScores.map { scores[$0]! }
     
+    //점수 평균연산
     students[idx].scoreAverage = stringToScore.reduce(0.0, +) / Double(stringToScore.count)
 }
